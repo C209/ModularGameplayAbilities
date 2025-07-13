@@ -361,6 +361,7 @@ void UModularAbilityExtensionComponent::BeginPlay()
 
 void UModularAbilityExtensionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	UninitializeAbilitySystem();
 	UnregisterInitStateFeature();
 
 	Super::EndPlay(EndPlayReason);
