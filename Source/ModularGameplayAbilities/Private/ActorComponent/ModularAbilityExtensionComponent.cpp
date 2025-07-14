@@ -72,6 +72,13 @@ void UModularAbilityExtensionComponent::InitializeAbilitySystem(UModularAbilityS
 	if (const IAbilityPawnDataInterface* PawnData = ModularPawnComponent->GetPawnData<IAbilityPawnDataInterface>();
 		ensure(PawnData))
 	{
+		for (const auto& AbilitySet : PawnData->GetAbilitySet())
+		{
+			if (AbilitySet)
+			{
+				AbilitySet->GiveToAbilitySystem(InASC, nullptr, this);
+			}
+		}
 		InASC->SetTagRelationshipMapping(PawnData->GetTagRelationshipMapping());
 	}
 
