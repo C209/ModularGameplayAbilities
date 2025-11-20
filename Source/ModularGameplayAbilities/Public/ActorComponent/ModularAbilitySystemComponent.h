@@ -36,8 +36,15 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	//~End of UActorComponent interface
 
+	/**
+	 * @ingroup UAbilitySystemComponent
+	 * @{
+	 */
 	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
-
+	/**
+	 * @}
+	 */
+	
 	typedef TFunctionRef<bool(const UModularGameplayAbility* ModularAbility, FGameplayAbilitySpecHandle Handle)> TShouldCancelAbilityFunc;
 	void CancelAbilitiesByFunc(TShouldCancelAbilityFunc ShouldCancelFunc, bool bReplicateCancelAbility);
 
@@ -45,6 +52,9 @@ public:
 
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+	bool IsInputTagActive(const FGameplayTag& InputTag) const;
+	void SetInputTagActive(const FGameplayTag& InputTag, bool bActive);
+
 
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
 	void ClearAbilityInput();
@@ -121,4 +131,8 @@ protected:
 
 	// Number of abilities running in each activation group.
 	int32 ActivationGroupCounts[static_cast<uint8>(EModularAbilityActivationGroup::MAX)];
+
+private:
+	
+	FGameplayTagContainer ActiveInputTags;
 };

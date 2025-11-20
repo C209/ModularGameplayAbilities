@@ -203,23 +203,26 @@ void UModularAbilitySystemComponent::AbilitySpecInputReleased(FGameplayAbilitySp
 
 void UModularAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
-	if (InputTag.IsValid())
+	if (!InputTag.IsValid()){return;}
+	SetInputTagActive(InputTag, true);
+
+	for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
 	{
-		for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
+		if (AbilitySpec.Ability && (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag)))
 		{
-			if (AbilitySpec.Ability && (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag)))
-			{
-				InputPressedSpecHandles.AddUnique(AbilitySpec.Handle);
-				InputHeldSpecHandles.AddUnique(AbilitySpec.Handle);
-			}
+			InputPressedSpecHandles.AddUnique(AbilitySpec.Handle);
+			InputHeldSpecHandles.AddUnique(AbilitySpec.Handle);
 		}
 	}
+	
 }
 
 void UModularAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
 {
 	if (InputTag.IsValid())
 	{
+		SetInputTagActive(InputTag, false);
+		
 		for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
 		{
 			if (AbilitySpec.Ability && (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag)))
@@ -228,6 +231,27 @@ void UModularAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag&
 				InputHeldSpecHandles.Remove(AbilitySpec.Handle);
 			}
 		}
+	}
+}
+
+bool UModularAbilitySystemComponent::IsInputTagActive(const FGameplayTag& InputTag) const
+{
+	return InputTag.IsValid() && ActiveInputTags.HasTagExact(InputTag);
+}
+
+
+void UModularAbilitySystemComponent::SetInputTagActive(const FGameplayTag& InputTag, bool bActive)
+{
+	if (!InputTag.IsValid())
+		return;
+        
+	if (bActive)
+	{
+		ActiveInputTags.AddTag(InputTag);
+	}
+	else
+	{
+		ActiveInputTags.RemoveTag(InputTag);
 	}
 }
 
