@@ -35,7 +35,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ModularAbility")
 	bool HasStatTag(FGameplayTag Tag) const;
 
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
 private:
 	// The ability system component sub-object used by player characters.

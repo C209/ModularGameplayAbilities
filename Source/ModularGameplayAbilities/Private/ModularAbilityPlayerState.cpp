@@ -8,6 +8,7 @@
 AModularAbilityPlayerState::AModularAbilityPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	ModularAbilitySystemComponent = CreateDefaultSubobject<UModularAbilitySystemComponent>("AbilitySystemComponent");
 }
 
 UModularAbilitySystemComponent* AModularAbilityPlayerState::GetAbilitySystemComponent() const
