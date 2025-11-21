@@ -41,6 +41,8 @@ public:
 	 * @{
 	 */
 	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
+	virtual void OnPlayerControllerSet() override;
+
 	/**
 	 * @}
 	 */

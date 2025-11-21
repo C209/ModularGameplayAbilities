@@ -419,6 +419,11 @@ void UModularGameplayAbility::OnPawnAvatarSet()
 	K2_OnPawnAvatarSet();
 }
 
+void UModularGameplayAbility::OnPlayerControllerSet()
+{
+	K2_OnPlayerControllerSet();
+}
+
 void UModularGameplayAbility::GetAbilitySource(FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, float& OutSourceLevel, const IModularAbilitySourceInterface*& OutAbilitySource, AActor*& OutEffectCauser) const
 {
 	OutSourceLevel = 0.0f;

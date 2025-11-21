@@ -85,6 +85,33 @@ void UModularAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, 
 	}
 }
 
+void UModularAbilitySystemComponent::OnPlayerControllerSet()
+{
+	Super::OnPlayerControllerSet();
+	
+	// Notify all abilities that a new PlayerController has been set
+	for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
+	{
+		if (UModularGameplayAbility* ModularAbilityCDO = CastChecked<UModularGameplayAbility>(AbilitySpec.Ability);
+			ModularAbilityCDO->GetInstancingPolicy() != EGameplayAbilityInstancingPolicy::InstancedPerActor)
+		{
+			for (TArray<UGameplayAbility*> Instances = AbilitySpec.GetAbilityInstances();
+				UGameplayAbility* AbilityInstance : Instances)
+			{
+				if (UModularGameplayAbility* ModularAbilityInstance = Cast<UModularGameplayAbility>(AbilityInstance))
+				{
+					// Ability instances may be missing for replays.
+					ModularAbilityInstance->OnPlayerControllerSet();
+				}
+			}
+		}
+		else
+		{
+			ModularAbilityCDO->OnPlayerControllerSet();
+		}
+	}
+}
+
 void UModularAbilitySystemComponent::TryActivateAbilitiesOnSpawn()
 {
 	ABILITYLIST_SCOPE_LOCK();

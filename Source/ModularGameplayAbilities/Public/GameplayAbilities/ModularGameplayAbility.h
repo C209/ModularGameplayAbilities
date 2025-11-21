@@ -121,6 +121,9 @@ public:
 		NativeOnAbilityFailedToActivate(FailedReason);
 		ScriptOnAbilityFailedToActivate(FailedReason);
 	}
+	
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	bool IsRetriggerInstancedAbility() const { return bRetriggerInstancedAbility; }
 
 protected:
 
@@ -174,6 +177,7 @@ protected:
 	//~End of UGameplayAbility interface
 
 	virtual void OnPawnAvatarSet();
+	virtual void OnPlayerControllerSet();
 
 	virtual void GetAbilitySource(FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
@@ -192,6 +196,10 @@ protected:
 	/** Called when the ability system is initialized with a pawn avatar. */
 	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "OnPawnAvatarSet")
 	void K2_OnPawnAvatarSet();
+	
+	/** Called when the ability system is initialized with a PlayerController. */
+	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "OnPlayerControllerSet")
+	void K2_OnPlayerControllerSet();
 
 protected:
 
