@@ -37,6 +37,7 @@ public:
 
 	void HandleControllerChanged();
 	void InitializePlayerInput(UInputComponent* PlayerInputComponent);
+	void HandlePostProcessInput(const float DeltaTime, const bool bGamePaused) const;
 	void InputActionMapping(UInputComponent* PlayerInputComponent, const APawn* Pawn);
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 	void Input_AbilityInputTagReleased(FGameplayTag InputTag);

@@ -14,6 +14,7 @@
 #include "Components/GameFrameworkComponentManager.h"
 #include "DataAsset/IAbilityPawnDataInterface.h"
 #include "Misc/UObjectToken.h"
+#include "ModularPlayerController.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ModularAbilityExtensionComponent)
 
@@ -142,8 +143,30 @@ void UModularAbilityExtensionComponent::InitializePlayerInput(UInputComponent* P
 	if (!Pawn) return;
 
 	if (const APlayerController* PlayerController = GetController<APlayerController>(); !PlayerController) return;
+	
+	if (AModularPlayerController* ModularPlayerController = GetController<AModularPlayerController>())
+	{
+		if (!ModularPlayerController->OnPostProcessInput.IsBoundToObject(this))
+		{
+			ModularPlayerController->OnPostProcessInput.AddWeakLambda(PlayerInputComponent, [WeakThis = TWeakObjectPtr<UModularAbilityExtensionComponent>(this)](const float DeltaTime, const bool bGamePaused)
+			{
+				if (WeakThis.IsValid())
+				{
+					WeakThis->HandlePostProcessInput(DeltaTime, bGamePaused);
+				}
+			});
+		}
+	}
 
 	InputActionMapping(PlayerInputComponent, Pawn);
+}
+
+void UModularAbilityExtensionComponent::HandlePostProcessInput(const float DeltaTime, const bool bGamePaused) const
+{
+	if (UModularAbilitySystemComponent* ModularASC = GetModularAbilitySystemComponent())
+	{
+		ModularASC->ProcessAbilityInput(DeltaTime, bGamePaused);
+	}
 }
 
 void UModularAbilityExtensionComponent::InputActionMapping(UInputComponent* PlayerInputComponent, const APawn* Pawn)
@@ -276,16 +299,20 @@ void UModularAbilityExtensionComponent::HandleChangeInitState(UGameFrameworkComp
 		&& DesiredState == ModularGameplayTags::InitState_DataInitialized)
 	{
 		const APawn* Pawn = GetPawn<APawn>();
-		AModularPlayerState* ModularPS = GetPlayerState<AModularPlayerState>();
-		const IAbilitySystemInterface* ModularAbilityPS = Cast<IAbilitySystemInterface>(ModularPS);
-		UAbilitySystemComponent* ModularASC = ModularAbilityPS->GetAbilitySystemComponent();
-		if (!ensure(Pawn && ModularPS && ModularASC))
+		const IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(Pawn);
+		if (!ensure(ASCInterface))
+		{
+			return;
+		}
+		// The Pawn could reroute the ASC to the PlayerState
+		UAbilitySystemComponent* ModularASC = ASCInterface->GetAbilitySystemComponent();
+		if (!ensure(Pawn && ModularASC))
 		{
 			return;
 		}
 		// The player state holds the persistent data for this player (state that persists across deaths and multiple pawns).
-		// The ability system component and attribute sets live on the player state.
-		InitializeAbilitySystem(Cast<UModularAbilitySystemComponent>(ModularASC), ModularPS);
+		// The ability system component and attribute sets live on the player state or the pawn, depending on the implementation.
+		InitializeAbilitySystem(Cast<UModularAbilitySystemComponent>(ModularASC), ModularASC->GetOwner());
 		if (Pawn->InputComponent != nullptr)
 		{
 			InitializePlayerInput(Pawn->InputComponent);
