@@ -79,6 +79,9 @@ class MODULARGAMEPLAYABILITIES_API UModularGameplayAbility : public UGameplayAbi
 
 public:
 	UModularGameplayAbility(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	
+	UFUNCTION(BlueprintPure)
+	const FGameplayTagContainer& GetAbilityTags() const { return GetAssetTags(); }
 
 	UFUNCTION(BlueprintCallable, Category = "Ability")
 	UModularAbilitySystemComponent* GetModularAbilitySystemComponentFromActorInfo() const;
