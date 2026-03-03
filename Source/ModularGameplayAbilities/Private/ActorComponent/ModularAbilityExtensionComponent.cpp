@@ -184,6 +184,7 @@ void UModularAbilityExtensionComponent::InputActionMapping(UInputComponent* Play
 		// be triggered directly by these input actions Triggered events.
 		TArray<uint32> BindHandles;
 		InputConfigComponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+		InputConfigComponent->BindGameplayEventActions(InputConfig, this, &ThisClass::Input_GameplayEventInputTagPressed, /*out*/ BindHandles);
 	}
 }
 
@@ -210,6 +211,22 @@ void UModularAbilityExtensionComponent::Input_AbilityInputTagReleased(FGameplayT
 	if (UModularAbilitySystemComponent* ModularASC = GetModularAbilitySystemComponent())
 	{
 		ModularASC->AbilityInputTagReleased(InputTag);
+	}
+}
+
+void UModularAbilityExtensionComponent::Input_GameplayEventInputTagPressed(const FInputActionValue& InputValue, FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>();
+		!Pawn)
+	{
+		return;
+	}
+	if (UModularAbilitySystemComponent* ModularASC = GetModularAbilitySystemComponent())
+	{
+		FGameplayEventData EventData;
+		EventData.EventTag = InputTag;
+		EventData.EventMagnitude = InputValue.Get<float>();
+		ModularASC->HandleGameplayEvent(InputTag, &EventData);
 	}
 }
 

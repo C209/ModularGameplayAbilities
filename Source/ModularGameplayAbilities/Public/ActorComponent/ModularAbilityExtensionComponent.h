@@ -41,6 +41,7 @@ public:
 	void InputActionMapping(UInputComponent* PlayerInputComponent, const APawn* Pawn);
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
+	void Input_GameplayEventInputTagPressed(const FInputActionValue& InputValue, FGameplayTag InputTag);
 
 	/**
 	 * @ingroup IGameFrameworkInitStateInterface
